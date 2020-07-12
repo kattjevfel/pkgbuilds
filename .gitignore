@@ -1,5 +1,6 @@
 *.asc
 *.log
+*.oxt
 *.rpm
 *.tar.*
 */*/
