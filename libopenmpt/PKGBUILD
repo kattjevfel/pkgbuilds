@@ -34,22 +34,21 @@ check() {
 
 package_libopenmpt() {
     cd "${pkgbase}"-"${pkgver}"+release
-
     make PREFIX=/usr DESTDIR="${pkgdir}" OPENMPT123=0 TEST=0 install
     install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/"${pkgname}"
 }
 
 package_openmpt123() {
     pkgdesc='A cross-platform command-line or terminal based module file player'
-    depends=(libopenmpt="${pkgver}" sdl2 portaudio libsndfile flac libpulse)
+    depends=(libopenmpt="${pkgver}" sdl2 portaudio flac libpulse)
 
     cd "${pkgbase}"-"${pkgver}"+release/bin
     install -Dm755 openmpt123_full "$pkgdir"/usr/bin/openmpt123
     install -Dm644 openmpt123.1 "$pkgdir"/usr/share/man/man1/openmpt123.1
     
     # link license
-    install -d "$pkgdir"/usr/share/licenses
-    ln -s $pkgbase "$pkgdir"/usr/share/licenses/"${pkgname}"
+    install -dm755 "$pkgdir"/usr/share/licenses/"${pkgname}"
+    ln -s /usr/share/licenses/"${pkgbase}"/LICENSE "$pkgdir"/usr/share/licenses/"${pkgname}"
 }
 
 package_openmpt123-minimal() {
@@ -58,10 +57,10 @@ package_openmpt123-minimal() {
     conflicts=(openmpt123)
 
     cd "${pkgbase}"-"${pkgver}"+release/bin
-    install -Dm0755 openmpt123_minimal "$pkgdir"/usr/bin/openmpt123
-    install -Dm0644 openmpt123.1 "$pkgdir"/usr/share/man/man1/openmpt123.1
+    install -Dm755 openmpt123_minimal "$pkgdir"/usr/bin/openmpt123
+    install -Dm644 openmpt123.1 "$pkgdir"/usr/share/man/man1/openmpt123.1
 
     # link license
-    install -d "$pkgdir"/usr/share/licenses
-    ln -s $pkgbase "$pkgdir"/usr/share/licenses/"${pkgname}"
+    install -dm755 "$pkgdir"/usr/share/licenses/"${pkgname}"
+    ln -s /usr/share/licenses/"${pkgbase}"/LICENSE "$pkgdir"/usr/share/licenses/"${pkgname}"
 }
