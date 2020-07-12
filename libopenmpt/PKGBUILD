@@ -1,94 +1,67 @@
-# Maintainer: carstene1ns <arch carsten-teibes de> - http://git.io/ctPKG
+# Maintainer: katt <magunasu.b97@gmail.com>
+# Contributor: carstene1ns <arch carsten-teibes de> - http://git.io/ctPKG
 
 pkgbase=libopenmpt
-pkgname=(libopenmpt openmpt123 openmpt123-minimal libopenmpt-modplug)
-_pkgver=0.4.11+release
-pkgver=${_pkgver%+*}
+pkgname=(libopenmpt openmpt123 openmpt123-minimal)
+pkgver=0.5.0
 pkgrel=1
-pkgdesc='A cross-platform C++ and C library to decode tracked music files (modules) into a raw PCM audio stream.'
-arch=('i686' 'x86_64')
-url='http://lib.openmpt.org/'
-license=('BSD')
-depends=('zlib' 'gcc-libs' 'libvorbis' 'mpg123')
-makedepends=('sdl2' 'portaudio' 'libsndfile' 'flac' 'help2man' 'libpulse')
-source=("https://lib.openmpt.org/files/$pkgname/src/$pkgname-${_pkgver}.makefile.tar.gz")
-sha256sums=('a5c90100dcbb95cfee1ebe90bb5a74f9ce562e3c4da848386c2001ef567ecba6')
+pkgdesc='A cross-platform C++ and C library to decode tracked music files (modules) into a raw PCM audio stream'
+arch=(i686 x86_64)
+url='https://lib.openmpt.org/libopenmpt/'
+license=(BSD)
+depends=(zlib gcc-libs libvorbis mpg123)
+makedepends=(sdl2 portaudio flac help2man libpulse)
+source=(https://lib.openmpt.org/files/"${pkgbase}"/src/"${pkgbase}"-"${pkgver}"+release.makefile.tar.gz)
+sha256sums=('641452a6bf14da5692d0f3f31c002ae63b2ad2b6a9d31dd928fbd983e0b17038')
 
 build() {
-  cd $pkgbase-${_pkgver%-*}
+    cd "${pkgbase}"-"${pkgver}"+release
 
-  make PREFIX=/usr CONFIG=gcc STATIC_LIB=0 NO_SDL=1 TEST=0 #VERBOSE=2
+    make PREFIX=/usr CONFIG=gcc STATIC_LIB=0 NO_SDL=1 TEST=0 #VERBOSE=2
 
-  # additional, minimal openmpt123 version
-  cp bin/openmpt123.norpath bin/openmpt123_full
-  rm openmpt123/openmpt123.o bin/openmpt123{,.norpath}
-  make PREFIX=/usr CONFIG=gcc STATIC_LIB=0 NO_SDL=1 \
-    NO_PORTAUDIO=1 NO_FLAC=1 NO_SNDFILE=1 NO_PULSEAUDIO=1 TEST=0 #VERBOSE=2
-  cp bin/openmpt123.norpath bin/openmpt123_minimal
+    # additional, minimal openmpt123 version
+    cp bin/openmpt123.norpath bin/openmpt123_full
+    rm openmpt123/openmpt123.o bin/openmpt123{,.norpath}
+    make PREFIX=/usr CONFIG=gcc STATIC_LIB=0 NO_SDL=1 \
+        NO_PORTAUDIO=1 NO_FLAC=1 NO_SNDFILE=1 NO_PULSEAUDIO=1 TEST=0 #VERBOSE=2
+    cp bin/openmpt123.norpath bin/openmpt123_minimal
 }
 
 check() {
-  cd $pkgbase-${_pkgver%-*}
-
-  make test
+    cd "${pkgbase}"-"${pkgver}"+release
+    make test
 }
 
 package_libopenmpt() {
-  cd $pkgbase-${_pkgver%-*}
+    cd "${pkgbase}"-"${pkgver}"+release
 
-  make PREFIX=/usr DESTDIR="$pkgdir" OPENMPT123=0 TEST=0 install
-
-  # license
-  install -Dm0644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
-}
-
-package_libopenmpt-modplug() {
-  pkgdesc='libmodplug compat layer/bridge to libopenmpt'
-  depends=("libopenmpt=$pkgver")
-  conflicts=('libmodplug')
-  provides=('libmodplug')
-  install='libopenmpt-modplug.install'
-
-  # library
-  cd $pkgbase-${_pkgver%-*}
-  make PREFIX=/usr DESTDIR="$pkgdir" TEST=0 install-modplug
-
-  # headers
-  install -d "$pkgdir"/usr/include/libmodplug
-  install -m0644 include/modplug/include/libmodplug/{stdafx,sndfile,modplug}.h "$pkgdir"/usr/include/libmodplug
-
-  # pkg-config
-  install -Dm0644 include/modplug/include/libmodplug/libmodplug.pc.in "$pkgdir"/usr/lib/pkgconfig/libmodplug.pc
-  sed -e 's|@.*prefix@|/usr|g;s|@libdir@|/usr/lib|' -i "$pkgdir"/usr/lib/pkgconfig/libmodplug.pc
-
-  # link license
-  install -d "$pkgdir"/usr/share/licenses
-  ln -s $pkgbase "$pkgdir"/usr/share/licenses/$pkgname
+    make PREFIX=/usr DESTDIR="${pkgdir}" OPENMPT123=0 TEST=0 install
+    install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/"${pkgname}"
 }
 
 package_openmpt123() {
-  pkgdesc='A cross-platform command-line or terminal based module file player.'
-  depends=("libopenmpt=$pkgver" 'sdl2' 'portaudio' 'libsndfile' 'flac' 'libpulse')
+    pkgdesc='A cross-platform command-line or terminal based module file player'
+    depends=(libopenmpt="${pkgver}" sdl2 portaudio libsndfile flac libpulse)
 
-  cd $pkgbase-${_pkgver%-*}/bin
-  install -Dm755 openmpt123_full "$pkgdir"/usr/bin/openmpt123
-  install -Dm644 openmpt123.1 "$pkgdir"/usr/share/man/man1/openmpt123.1
-  
-  # link license
-  install -d "$pkgdir"/usr/share/licenses
-  ln -s $pkgbase "$pkgdir"/usr/share/licenses/$pkgname
+    cd "${pkgbase}"-"${pkgver}"+release/bin
+    install -Dm755 openmpt123_full "$pkgdir"/usr/bin/openmpt123
+    install -Dm644 openmpt123.1 "$pkgdir"/usr/share/man/man1/openmpt123.1
+    
+    # link license
+    install -d "$pkgdir"/usr/share/licenses
+    ln -s $pkgbase "$pkgdir"/usr/share/licenses/"${pkgname}"
 }
 
 package_openmpt123-minimal() {
-  pkgdesc='A cross-platform command-line or terminal based module file player (with minimal dependencies).'
-  depends=("libopenmpt=$pkgver" 'sdl2')
-  conflicts=('openmpt123')
+    pkgdesc='A cross-platform command-line or terminal based module file player (with minimal dependencies)'
+    depends=(libopenmpt="${pkgver}" sdl2)
+    conflicts=(openmpt123)
 
-  cd $pkgbase-${_pkgver%-*}/bin
-  install -Dm0755 openmpt123_minimal "$pkgdir"/usr/bin/openmpt123
-  install -Dm0644 openmpt123.1 "$pkgdir"/usr/share/man/man1/openmpt123.1
+    cd "${pkgbase}"-"${pkgver}"+release/bin
+    install -Dm0755 openmpt123_minimal "$pkgdir"/usr/bin/openmpt123
+    install -Dm0644 openmpt123.1 "$pkgdir"/usr/share/man/man1/openmpt123.1
 
-  # link license
-  install -d "$pkgdir"/usr/share/licenses
-  ln -s $pkgbase "$pkgdir"/usr/share/licenses/$pkgname
+    # link license
+    install -d "$pkgdir"/usr/share/licenses
+    ln -s $pkgbase "$pkgdir"/usr/share/licenses/"${pkgname}"
 }
