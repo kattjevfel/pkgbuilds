@@ -1,0 +1,11 @@
+# Packaged packages
+*.tar.xz
+*.tar.zst
+
+# building logs
+*.log
+
+# Sources
+*.rpm
+*.tar.gz
+*/*/
