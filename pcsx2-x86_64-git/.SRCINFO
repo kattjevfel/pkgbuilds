@@ -1,0 +1,29 @@
+pkgbase = pcsx2-x86_64-git
+	pkgdesc = Free and open-source PlayStation 2 emulator
+	pkgver = r11062.38ce40b71
+	pkgrel = 1
+	url = https://github.com/PCSX2/pcsx2/pull/3451
+	arch = x86_64
+	license = GPL
+	makedepends = cmake
+	makedepends = xorgproto
+	makedepends = git
+	depends = libaio
+	depends = libjpeg-turbo
+	depends = libpcap
+	depends = libpulse
+	depends = portaudio
+	depends = sdl2
+	depends = soundtouch
+	depends = wxgtk2
+	provides = pcsx2-x86_64
+	conflicts = pcsx2-x86_64
+	source = pcsx2-x86_64::git+https://github.com/beaumanvienna/pcsx2.git#branch=x86_64-support
+	source = pcsx2-xz::git+https://github.com/PCSX2/xz.git
+	source = git+https://github.com/google/googletest.git
+	md5sums = SKIP
+	md5sums = SKIP
+	md5sums = SKIP
+
+pkgname = pcsx2-x86_64-git
+

@@ -1,0 +1,46 @@
+# Maintainer: katt <magunasu.b97@gmail.com>
+
+pkgname=pcsx2-x86_64-git
+pkgver=r11062.38ce40b71
+pkgrel=1
+pkgdesc='Free and open-source PlayStation 2 emulator'
+arch=(x86_64)
+url='https://github.com/PCSX2/pcsx2/pull/3451'
+license=(GPL)
+depends=(libaio libjpeg-turbo libpcap libpulse portaudio sdl2 soundtouch wxgtk2)
+makedepends=(cmake xorgproto git)
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=("${pkgname%-git}"::git+https://github.com/beaumanvienna/pcsx2.git#branch=x86_64-support
+		pcsx2-xz::git+https://github.com/PCSX2/xz.git
+		git+https://github.com/google/googletest.git)
+md5sums=('SKIP'
+		 'SKIP'
+		 'SKIP')
+
+prepare() {
+	cd "${pkgname%-git}"
+	git submodule init
+	git config submodule."3rdparty/xz/xz".url ../pcsx2-xz
+	git config submodule."3rdparty/gtest".url ../googletest
+	git submodule update
+}
+
+pkgver() {
+	cd "${pkgname%-git}"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cmake -B build -S "${pkgname%-git}" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_LIBRARY_PATH=/usr/lib \
+		-DGAMEINDEX_DIR=/usr/share/pcsx2 \
+		-DPACKAGE_MODE=ON
+	cmake --build build
+}
+
+package() {
+	DESTDIR="${pkgdir}" cmake --install build
+}
