@@ -1,0 +1,17 @@
+pkgbase = weechat-relay-git
+	pkgdesc = WeeChat Relay protocol library, written in C
+	pkgver = r59.f827817
+	pkgrel = 1
+	url = https://weechat.org
+	arch = x86_64
+	license = GPL
+	makedepends = cmake
+	makedepends = git
+	depends = gnutls
+	provides = weechat-relay
+	conflicts = weechat-relay
+	source = git+https://github.com/weechat/weechat-relay
+	md5sums = SKIP
+
+pkgname = weechat-relay-git
+
