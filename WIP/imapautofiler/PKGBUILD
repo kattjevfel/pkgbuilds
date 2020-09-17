@@ -1,0 +1,25 @@
+# Maintainer: katt <magunasu.b97@gmail.com>
+
+pkgname=imapautofiler-git
+pkgver=1.8.1.r22.ge3ed5fc
+pkgrel=1
+pkgdesc='A tool for managing messages on an IMAP server (git)'
+arch=(any)
+url=https://github.com/imapautofiler/imapautofiler
+license=(LGPL)
+makedepends=(python-setuptools git)
+depends=(python python-yaml python-imapclient python-keyring python-jinja)
+conflicts=("${pkgname%-git}")
+provides=("${pkgname%-git}")
+source=(git+"${url}".git)
+sha512sums=('SKIP')
+
+pkgver() {
+    cd "${pkgname%-git}"
+    git describe --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+package() {
+    cd "${pkgname%-git}"
+    python setup.py install --prefix=/usr --root="${pkgdir}" --optimize=1
+}
