@@ -2,10 +2,10 @@
 # Contributor: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
-pkgbase=pipewire-git-unbiased
-pkgname=(pipewire-git-unbiased pipewire-docs-git-unbiased pipewire-jack-git-unbiased pipewire-pulse-git-unbiased pipewire-alsa-git-unbiased
-    gst-plugin-pipewire-git-unbiased)
-pkgver=0.3.16.r43.ga65d4d04
+pkgbase=pipewire-git
+pkgname=(pipewire-git pipewire-docs-git pipewire-jack-git pipewire-pulse-git pipewire-alsa-git
+    gst-plugin-pipewire-git)
+pkgver=0.3.16.r46.gb055b9de
 pkgrel=1
 pkgdesc='Server and user space API to deal with multimedia pipelines (git, without personal preferences)'
 url=https://pipewire.org
@@ -18,11 +18,11 @@ source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
 
 pkgver() {
-    git -C ${pkgbase%-git-unbiased} describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+    git -C ${pkgbase%-git} describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-    arch-meson ${pkgbase%-git-unbiased} build \
+    arch-meson ${pkgbase%-git} build \
         -D docs=true \
         -D udevrulesdir=/usr/lib/udev/rules.d
     meson compile -C build
@@ -45,7 +45,7 @@ _pick() {
 
 _ver=${pkgver:0:3}
 
-package_pipewire-git-unbiased() {
+package_pipewire-git() {
     depends=(sbc rtkit vulkan-icd-loader bluez-libs alsa-card-profiles
         libdbus-1.so libsndfile.so libudev.so libasound.so libsystemd.so
         libglib-2.0.so libgobject-2.0.so)
@@ -76,14 +76,14 @@ package_pipewire-git-unbiased() {
     rm -rv "$pkgdir"/usr/share/alsa-card-profile
 }
 
-package_pipewire-docs-git-unbiased() {
+package_pipewire-docs-git() {
     pkgdesc+=' (documentation) (git, without personal preferences)'
     provides=(pipewire-docs)
     conflicts=(pipewire-docs)
     mv docs/* "$pkgdir"
 }
 
-package_pipewire-jack-git-unbiased() {
+package_pipewire-jack-git() {
     pkgdesc+=' (JACK support) (git, without personal preferences)'
     depends=(pipewire libpipewire-$_ver.so libjack.so)
     provides=(pipewire-jack)
@@ -91,7 +91,7 @@ package_pipewire-jack-git-unbiased() {
     mv jack/* "$pkgdir"
 }
 
-package_pipewire-pulse-git-unbiased() {
+package_pipewire-pulse-git() {
     pkgdesc+=' (PulseAudio replacement) (git, without personal preferences)'
     depends=(pipewire libpulse)
     provides=(pipewire-pulse pulseaudio pulseaudio-bluetooth)
@@ -99,7 +99,7 @@ package_pipewire-pulse-git-unbiased() {
     install=pipewire-pulse.install
 }
 
-package_pipewire-alsa-git-unbiased() {
+package_pipewire-alsa-git() {
     pkgdesc='ALSA Configuration for PipeWire (git, without personal preferences)'
     depends=(pipewire libpipewire-$_ver.so)
     provides=(pipewire-alsa pulseaudio-alsa)
@@ -109,7 +109,7 @@ package_pipewire-alsa-git-unbiased() {
     ln -st "$pkgdir/etc/alsa/conf.d" /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf
 }
 
-package_gst-plugin-pipewire-git-unbiased() {
+package_gst-plugin-pipewire-git() {
     pkgdesc='Multimedia graph framework - pipewire plugin (git, without personal preferences)'
     depends=(pipewire libpipewire-$_ver.so gst-plugins-base-libs)
     provides=(gst-plugin-pipewire)
