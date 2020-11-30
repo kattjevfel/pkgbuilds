@@ -5,9 +5,9 @@
 pkgbase=pipewire-git
 pkgname=(pipewire-git pipewire-docs-git pipewire-jack-git pipewire-pulse-git pipewire-alsa-git
     gst-plugin-pipewire-git)
-pkgver=0.3.16.r46.gb055b9de
+pkgver=0.3.17.r16.g95718792
 pkgrel=1
-pkgdesc='Server and user space API to deal with multimedia pipelines (git, without personal preferences)'
+pkgdesc='Server and user space API to deal with multimedia pipelines (git)'
 url=https://pipewire.org
 license=(LGPL2.1)
 arch=(x86_64)
@@ -47,8 +47,7 @@ _ver=${pkgver:0:3}
 
 package_pipewire-git() {
     depends=(sbc rtkit vulkan-icd-loader bluez-libs alsa-card-profiles
-        libdbus-1.so libsndfile.so libudev.so libasound.so libsystemd.so
-        libglib-2.0.so libgobject-2.0.so)
+        libdbus-1.so libsndfile.so libudev.so libasound.so libsystemd.so)
     optdepends=('pipewire-docs: Documentation'
         'pipewire-jack: JACK support'
         'pipewire-pulse: PulseAudio support')
@@ -66,9 +65,12 @@ package_pipewire-git() {
 
     _pick docs usr/share/doc
 
+    _pick jack etc/pipewire/media-session.d/with-jack
     _pick jack usr/bin/pw-jack usr/lib/pipewire-$_ver/jack
     _pick jack usr/lib/spa-0.2/jack
     _pick jack usr/share/man/man1/pw-jack.1
+
+    _pick pulse etc/pipewire/media-session.d/with-pulseaudio
 
     _pick gst usr/lib/gstreamer-1.0
 
@@ -77,14 +79,14 @@ package_pipewire-git() {
 }
 
 package_pipewire-docs-git() {
-    pkgdesc+=' (documentation) (git, without personal preferences)'
+    pkgdesc+=' (documentation) (git)'
     provides=(pipewire-docs)
     conflicts=(pipewire-docs)
     mv docs/* "$pkgdir"
 }
 
 package_pipewire-jack-git() {
-    pkgdesc+=' (JACK support) (git, without personal preferences)'
+    pkgdesc+=' (JACK support) (git)'
     depends=(pipewire libpipewire-$_ver.so libjack.so)
     provides=(pipewire-jack)
     conflicts=(pipewire-jack)
@@ -92,15 +94,16 @@ package_pipewire-jack-git() {
 }
 
 package_pipewire-pulse-git() {
-    pkgdesc+=' (PulseAudio replacement) (git, without personal preferences)'
+    pkgdesc+=' (PulseAudio replacement) (git)'
     depends=(pipewire libpulse)
     provides=(pipewire-pulse pulseaudio pulseaudio-bluetooth)
-    conflicts=(pipewire-pulse pulseaudio) # Sockets conflict
+    conflicts=(pipewire-pulse pulseaudio pulseaudio-bluetooth)
     install=pipewire-pulse.install
+    mv pulse/* "$pkgdir"
 }
 
 package_pipewire-alsa-git() {
-    pkgdesc='ALSA Configuration for PipeWire (git, without personal preferences)'
+    pkgdesc='ALSA Configuration for PipeWire (git)'
     depends=(pipewire libpipewire-$_ver.so)
     provides=(pipewire-alsa pulseaudio-alsa)
     conflicts=(pipewire-alsa)
@@ -110,7 +113,7 @@ package_pipewire-alsa-git() {
 }
 
 package_gst-plugin-pipewire-git() {
-    pkgdesc='Multimedia graph framework - pipewire plugin (git, without personal preferences)'
+    pkgdesc='Multimedia graph framework - pipewire plugin (git)'
     depends=(pipewire libpipewire-$_ver.so gst-plugins-base-libs)
     provides=(gst-plugin-pipewire)
     conflicts=(gst-plugin-pipewire)
