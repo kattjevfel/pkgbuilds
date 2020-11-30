@@ -1,7 +1,7 @@
 # Maintainer: katt <magunasu.b97@gmail.com>
 # Contributor: Sanpi <sanpi+aur@homecomputing.fr>
 pkgname=rpcs3
-pkgver=0.0.12
+pkgver=0.0.13
 pkgrel=1
 pkgdesc='Open-source Sony PlayStation 3 Emulator'
 arch=(x86_64)
@@ -13,20 +13,20 @@ options=(!emptydirs)
 source=(
     git+https://github.com/RPCS3/rpcs3.git#tag=v${pkgver}
     rpcs3-cereal::git+https://github.com/RPCS3/cereal.git
-    rpcs3-hidapi::git+https://github.com/RPCS3/hidapi
-    rpcs3-llvm::git+https://github.com/RPCS3/llvm-mirror
+    rpcs3-hidapi::git+https://github.com/RPCS3/hidapi.git
+    rpcs3-llvm::git+https://github.com/RPCS3/llvm-mirror.git
     rpcs3-yaml-cpp::git+https://github.com/RPCS3/yaml-cpp.git
-    git+https://github.com/Cyan4973/xxHash
+    git+https://github.com/Cyan4973/xxHash.git
     git+https://github.com/FNA-XNA/FAudio.git
     git+https://github.com/google/flatbuffers.git
     git+https://github.com/KhronosGroup/glslang.git
     git+https://github.com/KhronosGroup/SPIRV-Headers.git
     git+https://github.com/KhronosGroup/SPIRV-Tools.git
-    git+https://github.com/kobalicek/asmjit
+    git+https://github.com/kobalicek/asmjit.git
     git+https://github.com/libusb/libusb.git
-    git+https://github.com/RipleyTom/wolfssl.git
-    git+https://github.com/tcbrindle/span
-    git+https://github.com/zeux/pugixml
+    git+https://github.com/wolfSSL/wolfssl.git
+    git+https://github.com/tcbrindle/span.git
+    git+https://github.com/zeux/pugixml.git
 )
 
 md5sums=('SKIP'
