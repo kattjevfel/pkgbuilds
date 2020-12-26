@@ -5,7 +5,7 @@
 pkgbase=pipewire-git
 pkgname=(pipewire-git pipewire-docs-git pipewire-jack-git pipewire-pulse-git pipewire-alsa-git
     gst-plugin-pipewire-git)
-pkgver=0.3.18.r0.ge7dffd64
+pkgver=0.3.18.r76.g921aba9e
 pkgrel=1
 pkgdesc='Server and user space API to deal with multimedia pipelines (git)'
 url=https://pipewire.org
@@ -13,7 +13,7 @@ license=(LGPL2.1)
 arch=(x86_64)
 makedepends=(git meson doxygen graphviz xmltoman valgrind jack2 libpulse
             alsa-lib gst-plugins-base sbc rtkit vulkan-icd-loader dbus
-            libsndfile bluez-libs vulkan-headers libopenaptx libldac)
+            libsndfile bluez-libs vulkan-headers libopenaptx libldac libfdk-aac)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
 
@@ -48,7 +48,7 @@ _ver=${pkgver:0:3}
 package_pipewire-git() {
     depends=(sbc rtkit vulkan-icd-loader bluez-libs alsa-card-profiles
         libdbus-1.so libsndfile.so libudev.so libasound.so libsystemd.so
-        libldacBT_enc.so libopenaptx.so)
+        libldacBT_enc.so libopenaptx.so libfdk-aac.so)
     optdepends=('pipewire-docs: Documentation'
         'pipewire-jack: JACK support'
         'pipewire-pulse: PulseAudio support')
