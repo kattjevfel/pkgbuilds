@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Server and user space API to deal with multimedia pipelines (git)
-	pkgver = 0.3.18.r91.gc39ba857
+	pkgver = 0.3.19.r35.g7ae1ea14
 	pkgrel = 1
 	url = https://pipewire.org
 	arch = x86_64
@@ -36,6 +36,7 @@ pkgname = pipewire-katt-git
 	depends = bluez-libs
 	depends = alsa-card-profiles
 	depends = libdbus-1.so
+	depends = libncursesw.so
 	depends = libsndfile.so
 	depends = libudev.so
 	depends = libasound.so

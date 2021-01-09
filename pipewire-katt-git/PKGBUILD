@@ -5,7 +5,7 @@
 pkgbase=pipewire-katt-git
 pkgname=(pipewire-katt-git pipewire-docs-katt-git pipewire-jack-katt-git pipewire-pulse-katt-git pipewire-alsa-katt-git
     gst-plugin-pipewire-katt-git)
-pkgver=0.3.18.r91.gc39ba857
+pkgver=0.3.19.r35.g7ae1ea14
 pkgrel=1
 pkgdesc='Server and user space API to deal with multimedia pipelines (git)'
 url=https://pipewire.org
@@ -47,24 +47,24 @@ _ver=${pkgver:0:3}
 
 package_pipewire-katt-git() {
     depends=(sbc rtkit vulkan-icd-loader bluez-libs alsa-card-profiles
-        libdbus-1.so libsndfile.so libudev.so libasound.so libsystemd.so
-        libldacBT_enc.so libopenaptx.so libfdk-aac.so)
+        libdbus-1.so libncursesw.so libsndfile.so libudev.so libasound.so
+        libsystemd.so libldacBT_enc.so libopenaptx.so libfdk-aac.so)
     optdepends=('pipewire-docs: Documentation'
         'pipewire-jack: JACK support'
         'pipewire-pulse: PulseAudio support')
     provides=(pipewire libpipewire-$_ver.so)
     conflicts=(pipewire)
     backup=(etc/pipewire/pipewire.conf
-            etc/pipewire/media-session.d/alsa-monitor.conf
-            etc/pipewire/media-session.d/media-session.conf)
+            etc/pipewire/media-session.d/{alsa-monitor,media-session}.conf)
     install=pipewire.install
 
     DESTDIR="$pkgdir" meson install -C build
 
     cd "$pkgdir"
 
-    mkdir -p etc/alsa/conf.d
+    mkdir -p "$pkgdir"/etc/{alsa/conf.d,pipewire/media-session.d}
     ln -st etc/alsa/conf.d /usr/share/alsa/alsa.conf.d/50-pipewire.conf
+    touch "$pkgdir/etc/pipewire/media-session.d/with-alsa"
 
     _pick docs usr/share/doc
 
