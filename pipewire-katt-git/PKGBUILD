@@ -4,21 +4,24 @@
 
 pkgbase=pipewire-katt-git
 pkgname=(pipewire-katt-git pipewire-docs-katt-git pipewire-jack-katt-git pipewire-pulse-katt-git pipewire-alsa-katt-git
-    gst-plugin-pipewire-katt-git)
-pkgver=0.3.19.r35.g7ae1ea14
+    gst-plugin-pipewire-katt-git alsa-card-profiles-katt-git)
+pkgver=0.3.20.r1.g44cad2d5
 pkgrel=1
+epoch=1
 pkgdesc='Server and user space API to deal with multimedia pipelines (git)'
 url=https://pipewire.org
-license=(LGPL2.1)
+license=(LGPL)
 arch=(x86_64)
 makedepends=(git meson doxygen graphviz xmltoman valgrind jack2 libpulse
             alsa-lib gst-plugins-base sbc rtkit vulkan-icd-loader dbus
             libsndfile bluez-libs vulkan-headers libopenaptx libldac libfdk-aac)
+checkdepends=(desktop-file-utils)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
 
 pkgver() {
-    git -C ${pkgbase%-katt-git} describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+    cd  ${pkgbase%-katt-git}
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
@@ -55,7 +58,8 @@ package_pipewire-katt-git() {
     provides=(pipewire libpipewire-$_ver.so)
     conflicts=(pipewire)
     backup=(etc/pipewire/pipewire.conf
-            etc/pipewire/media-session.d/{alsa-monitor,media-session}.conf)
+            etc/pipewire/media-session.d/media-session.conf
+            etc/pipewire/media-session.d/{alsa,bluez,v4l2}-monitor.conf)
     install=pipewire.install
 
     DESTDIR="$pkgdir" meson install -C build
@@ -77,8 +81,8 @@ package_pipewire-katt-git() {
 
     _pick gst usr/lib/gstreamer-1.0
 
-    # Use alsa-card-profiles built with Pulseaudio
-    rm -rv "$pkgdir"/usr/share/alsa-card-profile
+    _pick acp usr/lib/udev
+    _pick acp usr/share/alsa-card-profile
 }
 
 package_pipewire-docs-katt-git() {
@@ -121,4 +125,12 @@ package_gst-plugin-pipewire-katt-git() {
     provides=(gst-plugin-pipewire)
     conflicts=(gst-plugin-pipewire)
     mv gst/* "$pkgdir"
+}
+
+package_alsa-card-profiles-katt-git() {
+    pkgdesc="ALSA card profiles shared by PipeWire (git)"
+    depends=()
+    provides=(alsa-card-profiles)
+    conflicts=(alsa-card-profiles)
+    mv acp/* "$pkgdir"
 }

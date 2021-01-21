@@ -1,10 +1,12 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Server and user space API to deal with multimedia pipelines (git)
-	pkgver = 0.3.19.r35.g7ae1ea14
+	pkgver = 0.3.20.r1.g44cad2d5
 	pkgrel = 1
+	epoch = 1
 	url = https://pipewire.org
 	arch = x86_64
-	license = LGPL2.1
+	license = LGPL
+	checkdepends = desktop-file-utils
 	makedepends = git
 	makedepends = meson
 	makedepends = doxygen
@@ -51,8 +53,10 @@ pkgname = pipewire-katt-git
 	provides = libpipewire-0.3.so
 	conflicts = pipewire
 	backup = etc/pipewire/pipewire.conf
-	backup = etc/pipewire/media-session.d/alsa-monitor.conf
 	backup = etc/pipewire/media-session.d/media-session.conf
+	backup = etc/pipewire/media-session.d/alsa-monitor.conf
+	backup = etc/pipewire/media-session.d/bluez-monitor.conf
+	backup = etc/pipewire/media-session.d/v4l2-monitor.conf
 
 pkgname = pipewire-docs-katt-git
 	pkgdesc = Server and user space API to deal with multimedia pipelines (git) (documentation) (git)
@@ -94,3 +98,9 @@ pkgname = gst-plugin-pipewire-katt-git
 	depends = gst-plugins-base-libs
 	provides = gst-plugin-pipewire
 	conflicts = gst-plugin-pipewire
+
+pkgname = alsa-card-profiles-katt-git
+	pkgdesc = ALSA card profiles shared by PipeWire (git)
+	depends = 
+	provides = alsa-card-profiles
+	conflicts = alsa-card-profiles
