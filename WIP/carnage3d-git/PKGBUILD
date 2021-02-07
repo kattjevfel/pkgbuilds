@@ -1,0 +1,37 @@
+# Maintainer: katt <magunasu.b97@gmail.com>
+
+pkgname=carnage3d-git
+pkgver=r575.6985dda
+pkgrel=1
+pkgdesc='Reimplementation of Grand Theft Auto 1'
+arch=(x86_64)
+url=https://github.com/codenamecpp/carnage3d
+license=(MIT)
+depends=(glew glm xorg-server)
+makedepends=(clang git premake wget)
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=(git+"${url}".git
+		git+https://github.com/erincatto/Box2D.git)
+md5sums=('SKIP'
+         'SKIP')
+
+pkgver() {
+	cd "${pkgname%-git}"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+	cd "${pkgname%-git}"
+	git submodule init
+	git config submodule."third_party/Box2D".url ../Box2D
+	git submodule update
+}
+
+build() {
+	make -C "${pkgname%-git}"
+}
+
+package() {
+	make DESTDIR="$pkgdir/" -C "${pkgname%-git}" install
+}
