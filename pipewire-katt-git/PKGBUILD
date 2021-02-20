@@ -3,25 +3,24 @@
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
 pkgbase=pipewire-katt-git
-pkgname=(pipewire-katt-git pipewire-docs-katt-git pipewire-jack-katt-git pipewire-pulse-katt-git pipewire-alsa-katt-git
-    gst-plugin-pipewire-katt-git alsa-card-profiles-katt-git)
-pkgver=0.3.20.r1.g44cad2d5
+pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-jack-katt-git
+        pipewire-pulse-katt-git gst-plugin-pipewire-katt-git)
+pkgver=0.3.22.r25.ga5dc2493
 pkgrel=1
 epoch=1
-pkgdesc='Server and user space API to deal with multimedia pipelines (git)'
+pkgdesc='Low-latency audio/video router and processor (git)'
 url=https://pipewire.org
 license=(LGPL)
 arch=(x86_64)
 makedepends=(git meson doxygen graphviz xmltoman valgrind jack2 libpulse
-            alsa-lib gst-plugins-base sbc rtkit vulkan-icd-loader dbus
-            libsndfile bluez-libs vulkan-headers libopenaptx libldac libfdk-aac)
+            alsa-lib gst-plugins-base rtkit dbus sdl2 ncurses libsndfile 
+            bluez-libs sbc libldac libopenaptx libfdk-aac)
 checkdepends=(desktop-file-utils)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
 
 pkgver() {
-    cd  ${pkgbase%-katt-git}
-    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+    git -C ${pkgbase%-katt-git} describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
@@ -49,15 +48,17 @@ _pick() {
 _ver=${pkgver:0:3}
 
 package_pipewire-katt-git() {
-    depends=(sbc rtkit vulkan-icd-loader bluez-libs alsa-card-profiles
-        libdbus-1.so libncursesw.so libsndfile.so libudev.so libasound.so
-        libsystemd.so libldacBT_enc.so libopenaptx.so libfdk-aac.so)
-    optdepends=('pipewire-docs: Documentation'
-        'pipewire-jack: JACK support'
-        'pipewire-pulse: PulseAudio support')
+    depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so
+            libudev.so libasound.so libsystemd.so libbluetooth.so libsbc.so
+            libldacBT_enc.so libopenaptx.so libfdk-aac.so)
+    optdepends=('pipewire-docs-katt-git: Documentation'
+            'pipewire-alsa-katt-git: ALSA configuration'
+            'pipewire-jack-katt-git: JACK support'
+            'pipewire-pulse-katt-git: PulseAudio replacement'
+            'gst-plugin-pipewire-katt-git: GStreamer support')
     provides=(pipewire libpipewire-$_ver.so)
     conflicts=(pipewire)
-    backup=(etc/pipewire/pipewire.conf
+    backup=(etc/pipewire/{pipewire{,-pulse},client{,-rt}}.conf
             etc/pipewire/media-session.d/media-session.conf
             etc/pipewire/media-session.d/{alsa,bluez,v4l2}-monitor.conf)
     install=pipewire.install
@@ -66,13 +67,12 @@ package_pipewire-katt-git() {
 
     cd "$pkgdir"
 
-    mkdir -p "$pkgdir"/etc/{alsa/conf.d,pipewire/media-session.d}
-    ln -st etc/alsa/conf.d /usr/share/alsa/alsa.conf.d/50-pipewire.conf
-    touch "$pkgdir/etc/pipewire/media-session.d/with-alsa"
+    _pick acp usr/lib/udev
+    _pick acp usr/share/alsa-card-profile
 
     _pick docs usr/share/doc
 
-    _pick jack etc/pipewire/media-session.d/with-jack
+    _pick jack etc/pipewire/{jack.conf,media-session.d/with-jack}
     _pick jack usr/bin/pw-jack usr/lib/pipewire-$_ver/jack
     _pick jack usr/lib/spa-0.2/jack
     _pick jack usr/share/man/man1/pw-jack.1
@@ -80,43 +80,47 @@ package_pipewire-katt-git() {
     _pick pulse etc/pipewire/media-session.d/with-pulseaudio
 
     _pick gst usr/lib/gstreamer-1.0
+}
 
-    _pick acp usr/lib/udev
-    _pick acp usr/share/alsa-card-profile
+package_alsa-card-profiles-katt-git() {
+    pkgdesc+=' - ALSA card profiles (git)'
+    mv acp/* "$pkgdir"
 }
 
 package_pipewire-docs-katt-git() {
-    pkgdesc+=' (documentation) (git)'
+    pkgdesc+=' - documentation (git)'
     provides=(pipewire-docs)
     conflicts=(pipewire-docs)
     mv docs/* "$pkgdir"
 }
 
+package_pipewire-alsa-katt-git() {
+    pkgdesc+=' - ALSA configuration (git)'
+    depends=(pipewire-katt-git)
+    provides=(pulseaudio-alsa)
+
+    mkdir -p "$pkgdir/etc/alsa/conf.d"
+    ln -st "$pkgdir/etc/alsa/conf.d" \
+        /usr/share/alsa/alsa.conf.d/{50-pipewire,99-pipewire-default}.conf
+    install -Dm644 /dev/null "$pkgdir/etc/pipewire/media-session.d/with-alsa"
+}
+
 package_pipewire-jack-katt-git() {
-    pkgdesc+=' (JACK support) (git)'
+    pkgdesc+=' - JACK support (git)'
     depends=(pipewire libpipewire-$_ver.so libjack.so)
+    backup=(etc/pipewire/jack.conf)
     provides=(pipewire-jack)
     conflicts=(pipewire-jack)
     mv jack/* "$pkgdir"
 }
 
 package_pipewire-pulse-katt-git() {
-    pkgdesc+=' (PulseAudio replacement) (git)'
+    pkgdesc+=' - PulseAudio replacement (git)'
     depends=(pipewire libpulse)
     provides=(pipewire-pulse pulseaudio pulseaudio-bluetooth)
     conflicts=(pipewire-pulse pulseaudio pulseaudio-bluetooth)
     install=pipewire-pulse.install
     mv pulse/* "$pkgdir"
-}
-
-package_pipewire-alsa-katt-git() {
-    pkgdesc='ALSA Configuration for PipeWire (git)'
-    depends=(pipewire libpipewire-$_ver.so)
-    provides=(pipewire-alsa pulseaudio-alsa)
-    conflicts=(pipewire-alsa)
-
-    mkdir -p "$pkgdir/etc/alsa/conf.d"
-    ln -st "$pkgdir/etc/alsa/conf.d" /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf
 }
 
 package_gst-plugin-pipewire-katt-git() {
@@ -125,12 +129,4 @@ package_gst-plugin-pipewire-katt-git() {
     provides=(gst-plugin-pipewire)
     conflicts=(gst-plugin-pipewire)
     mv gst/* "$pkgdir"
-}
-
-package_alsa-card-profiles-katt-git() {
-    pkgdesc="ALSA card profiles shared by PipeWire (git)"
-    depends=()
-    provides=(alsa-card-profiles)
-    conflicts=(alsa-card-profiles)
-    mv acp/* "$pkgdir"
 }
