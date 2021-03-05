@@ -5,7 +5,7 @@
 pkgbase=pipewire-katt-git
 pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-media-session-katt-git
         pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git)
-pkgver=0.3.23.r4.g3c01cfe8
+pkgver=0.3.23.r9.gc8fd34a4
 pkgrel=1
 epoch=1
 pkgdesc='Low-latency audio/video router and processor (git)'
@@ -113,7 +113,8 @@ package_pipewire-media-session-katt-git() {
 package_pipewire-alsa-katt-git() {
     pkgdesc+=' - ALSA configuration (git)'
     depends=(pipewire-media-session-katt-git)
-    provides=(pulseaudio-alsa)
+    provides=("${pkgname%-katt-git}" pulseaudio-alsa)
+    conflicts=("${pkgname%-katt-git}")
 
     mkdir -p "$pkgdir/etc/alsa/conf.d"
     ln -st "$pkgdir/etc/alsa/conf.d" \

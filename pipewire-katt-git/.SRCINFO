@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git)
-	pkgver = 0.3.23.r4.g3c01cfe8
+	pkgver = 0.3.23.r9.gc8fd34a4
 	pkgrel = 1
 	epoch = 1
 	url = https://pipewire.org
@@ -71,7 +71,9 @@ pkgname = pipewire-docs-katt-git
 pkgname = pipewire-alsa-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git) - ALSA configuration (git)
 	depends = pipewire-media-session-katt-git
+	provides = pipewire-alsa
 	provides = pulseaudio-alsa
+	conflicts = pipewire-alsa
 
 pkgname = pipewire-media-session-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git) - Session manager (git)
