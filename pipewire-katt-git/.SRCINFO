@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git)
-	pkgver = 0.3.23.r56.gd63f4234
+	pkgver = 0.3.23.r62.g22f6e8e3
 	pkgrel = 1
 	epoch = 1
 	url = https://pipewire.org
@@ -26,7 +26,6 @@ pkgbase = pipewire-katt-git
 	makedepends = libldac
 	makedepends = libopenaptx
 	makedepends = libfdk-aac
-	makedepends = vulkan-headers
 	source = git+https://gitlab.freedesktop.org/pipewire/pipewire.git
 	md5sums = SKIP
 
