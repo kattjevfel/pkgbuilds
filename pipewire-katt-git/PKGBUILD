@@ -5,7 +5,7 @@
 pkgbase=pipewire-katt-git
 pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-media-session-katt-git
         pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git)
-pkgver=0.3.23.r9.gc8fd34a4
+pkgver=0.3.23.r56.gd63f4234
 pkgrel=1
 epoch=1
 pkgdesc='Low-latency audio/video router and processor (git)'
@@ -14,7 +14,7 @@ license=(LGPL)
 arch=(x86_64)
 makedepends=(git meson doxygen graphviz xmltoman valgrind libpulse
             alsa-lib gst-plugins-base rtkit dbus sdl2 ncurses libsndfile 
-            bluez-libs sbc libldac libopenaptx libfdk-aac)
+            bluez-libs sbc libldac libopenaptx libfdk-aac vulkan-headers)
 checkdepends=(desktop-file-utils)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
@@ -25,8 +25,9 @@ pkgver() {
 
 build() {
     arch-meson ${pkgbase%-katt-git} build \
-        -D docs=true \
-        -D jack=false \
+        -D docs=enabled \
+        -D jack=disabled \
+        -D vulkan=disabled \
         -D udevrulesdir=/usr/lib/udev/rules.d
     meson compile -C build
 }
