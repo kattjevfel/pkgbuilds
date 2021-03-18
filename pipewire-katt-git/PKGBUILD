@@ -5,7 +5,7 @@
 pkgbase=pipewire-katt-git
 pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-media-session-katt-git
         pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git)
-pkgver=0.3.23.r62.g22f6e8e3
+pkgver=0.3.24.r3.g972cf8d6
 pkgrel=1
 epoch=1
 pkgdesc='Low-latency audio/video router and processor (git)'
@@ -14,7 +14,7 @@ license=(LGPL)
 arch=(x86_64)
 makedepends=(git meson doxygen graphviz xmltoman valgrind libpulse
             alsa-lib gst-plugins-base rtkit dbus sdl2 ncurses libsndfile 
-            bluez-libs sbc libldac libopenaptx libfdk-aac)
+            bluez-libs sbc libldac libopenaptx libfdk-aac vulkan-headers vulkan-icd-loader)
 checkdepends=(desktop-file-utils)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
@@ -27,7 +27,6 @@ build() {
     arch-meson ${pkgbase%-katt-git} build \
         -D docs=enabled \
         -D jack=disabled \
-        -D vulkan=disabled \
         -D libcamera=disabled \
         -D udevrulesdir=/usr/lib/udev/rules.d
     meson compile -C build
@@ -53,7 +52,7 @@ _ver=${pkgver:0:3}
 package_pipewire-katt-git() {
     depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so
             libudev.so libasound.so libsystemd.so libbluetooth.so libsbc.so
-            libldacBT_enc.so libopenaptx.so libfdk-aac.so)
+            libldacBT_enc.so libopenaptx.so libfdk-aac.so libvulkan.so)
     optdepends=('pipewire-docs-katt-git: Documentation'
                 'pipewire-media-session-katt-git: Default session manager'
                 'pipewire-alsa-katt-git: ALSA configuration'
