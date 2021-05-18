@@ -5,12 +5,12 @@
 pkgbase=pipewire-katt-git
 pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-media-session-katt-git
         pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git)
-pkgver=0.3.24.r3.g972cf8d6
+pkgver=0.3.27.r132.gcdfd50e1
 pkgrel=1
 epoch=1
 pkgdesc='Low-latency audio/video router and processor (git)'
 url=https://pipewire.org
-license=(LGPL)
+license=(MIT)
 arch=(x86_64)
 makedepends=(git meson doxygen graphviz xmltoman valgrind libpulse
             alsa-lib gst-plugins-base rtkit dbus sdl2 ncurses libsndfile 
@@ -50,6 +50,7 @@ _pick() {
 _ver=${pkgver:0:3}
 
 package_pipewire-katt-git() {
+    license+=(LGPL)  # libspa-alsa
     depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so
             libudev.so libasound.so libsystemd.so libbluetooth.so libsbc.so
             libldacBT_enc.so libopenaptx.so libfdk-aac.so libvulkan.so)
@@ -61,10 +62,12 @@ package_pipewire-katt-git() {
                 'gst-plugin-pipewire-katt-git: GStreamer support')
     provides=("${pkgname%-katt-git}" libpipewire-$_ver.so)
     conflicts=("${pkgname%-katt-git}")
-    backup=(etc/pipewire/{pipewire{,-pulse},client{,-rt}}.conf)
+    backup=({etc,usr/share}/pipewire/{pipewire{,-pulse},client{,-rt}}.conf)
     install=pipewire.install
 
-    DESTDIR="$pkgdir" meson install -C build
+    meson install -C build --destdir "$pkgdir"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 
     cd "$pkgdir"
 
@@ -73,23 +76,26 @@ package_pipewire-katt-git() {
 
     _pick docs usr/share/doc
 
-    _pick pms etc/pipewire/media-session.d/*.conf
+    _pick pms usr/share/pipewire/media-session.d/*.conf
     _pick pms usr/bin/pipewire-media-session
     _pick pms usr/lib/systemd/user/pipewire-media-session.service
 
-    _pick jack etc/pipewire/{jack.conf,media-session.d/with-jack}
+    _pick jack usr/share/pipewire/{jack.conf,media-session.d/with-jack}
     _pick jack usr/bin/pw-jack usr/lib/pipewire-$_ver/jack
     _pick jack usr/share/man/man1/pw-jack.1
 
-    _pick pulse etc/pipewire/media-session.d/with-pulseaudio
+    _pick pulse usr/share/pipewire/media-session.d/with-pulseaudio
 
     _pick gst usr/lib/gstreamer-1.0
 }
 
 package_alsa-card-profiles-katt-git() {
     pkgdesc+=' - ALSA card profiles (git)'
+
+    license=(LGPL)
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
+
     mv acp/* "$pkgdir"
 }
 
@@ -97,18 +103,24 @@ package_pipewire-docs-katt-git() {
     pkgdesc+=' - documentation (git)'
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
+
     mv docs/* "$pkgdir"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 }
 
 package_pipewire-media-session-katt-git() {
     pkgdesc+=' - Session manager (git)'
     depends=(pipewire-katt-git libpipewire-$_ver.so)
-    backup=(etc/pipewire/media-session.d/media-session.conf
-            etc/pipewire/media-session.d/{alsa,bluez,v4l2}-monitor.conf)
+    backup=({etc,usr/share}/pipewire/media-session.d/media-session.conf
+            {etc,usr/share}/pipewire/media-session.d/{alsa,bluez,v4l2}-monitor.conf)
     install=pipewire-media-session.install
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
+
     mv pms/* "$pkgdir"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 }
 
 package_pipewire-alsa-katt-git() {
@@ -120,16 +132,23 @@ package_pipewire-alsa-katt-git() {
     mkdir -p "$pkgdir/etc/alsa/conf.d"
     ln -st "$pkgdir/etc/alsa/conf.d" \
         /usr/share/alsa/alsa.conf.d/{50-pipewire,99-pipewire-default}.conf
-    install -Dm644 /dev/null "$pkgdir/etc/pipewire/media-session.d/with-alsa"
+
+    install -Dm644 /dev/null "$pkgdir/usr/share/pipewire/media-session.d/with-alsa"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 }
 
 package_pipewire-jack-katt-git() {
     pkgdesc+=' - JACK support (git)'
+    license+=(GPL2)  # libjackserver
     depends=(pipewire-media-session-katt-git libpipewire-$_ver.so)
-    backup=(etc/pipewire/jack.conf)
+    backup=({etc,usr/share}/pipewire/jack.conf)
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
+
     mv jack/* "$pkgdir"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 }
 
 package_pipewire-pulse-katt-git() {
@@ -138,7 +157,10 @@ package_pipewire-pulse-katt-git() {
     provides=("${pkgname%-katt-git}" pulseaudio pulseaudio-bluetooth)
     conflicts=("${pkgname%-katt-git}" pulseaudio pulseaudio-bluetooth)
     install=pipewire-pulse.install
+
     mv pulse/* "$pkgdir"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 }
 
 package_gst-plugin-pipewire-katt-git() {
@@ -146,5 +168,8 @@ package_gst-plugin-pipewire-katt-git() {
     depends=(pipewire-media-session-katt-git libpipewire-$_ver.so gst-plugins-base-libs)
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
+
     mv gst/* "$pkgdir"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 }
