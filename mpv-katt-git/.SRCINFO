@@ -1,7 +1,7 @@
 pkgbase = mpv-katt-git
 	pkgdesc = a free, open source, and cross-platform media player (git, biased af)
-	pkgver = 0.33.0.r139.gb6aedaa726
-	pkgrel = 2
+	pkgver = 0.33.0.r177.gfd8c673cfc
+	pkgrel = 1
 	url = https://mpv.io
 	arch = x86_64
 	license = GPL3
@@ -58,6 +58,7 @@ pkgbase = mpv-katt-git
 	depends = luajit
 	depends = mesa
 	depends = pipewire
+	depends = openal
 	depends = rubberband
 	depends = librubberband.so
 	depends = shaderc
@@ -75,4 +76,3 @@ pkgbase = mpv-katt-git
 	sha256sums = d72a5863bceb5ac542c656ff85a9cb23d27d30c1609022e1b1735744f2777aaf
 
 pkgname = mpv-katt-git
-
