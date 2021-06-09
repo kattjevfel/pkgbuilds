@@ -3,9 +3,8 @@
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
 pkgbase=pipewire-katt-git
-pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-media-session-katt-git
-        pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git pipewire-zeroconf-katt-git)
-pkgver=0.3.28.r0.gfb55cc47
+pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-media-session-katt-git pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git pipewire-zeroconf-katt-git)
+pkgver=0.3.30.r27.g85d34d8d9
 pkgrel=1
 epoch=1
 pkgdesc='Low-latency audio/video router and processor (git)'
@@ -15,7 +14,7 @@ arch=(x86_64)
 makedepends=(git meson doxygen xmltoman valgrind libpulse alsa-lib
             gst-plugins-base rtkit dbus sdl2 ncurses libsndfile bluez-libs sbc
             libldac libopenaptx libfdk-aac vulkan-headers vulkan-icd-loader
-            avahi)
+            avahi webrtc-audio-processing)
 checkdepends=(desktop-file-utils)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
@@ -25,11 +24,14 @@ pkgver() {
 }
 
 build() {
-    arch-meson ${pkgbase%-katt-git} build \
-        -D docs=enabled \
-        -D jack=disabled \
-        -D libcamera=disabled \
+    local meson_options=(
+        -D docs=enabled
+        -D jack=disabled
+        -D libcamera=disabled
         -D udevrulesdir=/usr/lib/udev/rules.d
+    )
+    
+    arch-meson pipewire build "${meson_options[@]}"
     meson compile -C build
 }
 
@@ -51,45 +53,46 @@ _pick() {
 _ver=${pkgver:0:3}
 
 package_pipewire-katt-git() {
-    license+=(LGPL)  # libspa-alsa
-    depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so
-            libudev.so libasound.so libsystemd.so libbluetooth.so libsbc.so
-            libldacBT_enc.so libopenaptx.so libfdk-aac.so libvulkan.so)
+    license+=(LGPL) # libspa-alsa
+    depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so libudev.so libasound.so libsystemd.so libbluetooth.so libsbc.so libldacBT_enc.so libopenaptx.so libfdk-aac.so libvulkan.so libwebrtc_audio_processing.so)
     optdepends=('pipewire-docs-katt-git: Documentation'
                 'pipewire-media-session-katt-git: Default session manager'
                 'pipewire-alsa-katt-git: ALSA configuration'
                 'pipewire-jack-katt-git: JACK support'
                 'pipewire-pulse-katt-git: PulseAudio replacement'
-                'gst-plugin-pipewire-katt-git: GStreamer support')
+                'gst-plugin-pipewire-katt-git: GStreamer support'
+                'pipewire-zeroconf-katt-git: Zeroconf support')
     provides=("${pkgname%-katt-git}" libpipewire-$_ver.so)
     conflicts=("${pkgname%-katt-git}")
     install=pipewire.install
 
     meson install -C build --destdir "$pkgdir"
 
+    (
+        cd "$pkgdir"
+
+        _pick acp usr/lib/udev
+        _pick acp usr/share/alsa-card-profile
+
+        _pick docs usr/share/doc
+
+        _pick pms usr/bin/pipewire-media-session
+        _pick pms usr/lib/systemd/user/pipewire-media-session.service
+        _pick pms usr/share/pipewire/media-session.d/*.conf
+
+        _pick jack usr/bin/pw-jack usr/lib/pipewire-$_ver/jack
+        _pick jack usr/share/man/man1/pw-jack.1
+        _pick jack usr/share/pipewire/{jack.conf,media-session.d/with-jack}
+
+        _pick pulse usr/lib/pipewire-$_ver/libpipewire-module-pulse-tunnel.so
+        _pick pulse usr/share/pipewire/media-session.d/with-pulseaudio
+
+        _pick gst usr/lib/gstreamer-1.0
+
+        _pick zeroconf usr/lib/pipewire-$_ver/libpipewire-module-zeroconf-discover.so
+    )
+
     install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
-
-    cd "$pkgdir"
-
-    _pick acp usr/lib/udev
-    _pick acp usr/share/alsa-card-profile
-
-    _pick docs usr/share/doc
-
-    _pick pms usr/bin/pipewire-media-session
-    _pick pms usr/lib/systemd/user/pipewire-media-session.service
-    _pick pms usr/share/pipewire/media-session.d/*.conf
-
-    _pick jack usr/bin/pw-jack usr/lib/pipewire-$_ver/jack
-    _pick jack usr/share/man/man1/pw-jack.1
-    _pick jack usr/share/pipewire/{jack.conf,media-session.d/with-jack}
-
-    _pick pulse usr/lib/pipewire-$_ver/libpipewire-module-pulse-tunnel.so
-    _pick pulse usr/share/pipewire/media-session.d/with-pulseaudio
-
-    _pick gst usr/lib/gstreamer-1.0
-
-    _pick zeroconf usr/lib/pipewire-$_ver/libpipewire-module-zeroconf-discover.so
 }
 
 package_alsa-card-profiles-katt-git() {
@@ -141,7 +144,7 @@ package_pipewire-alsa-katt-git() {
 
 package_pipewire-jack-katt-git() {
     pkgdesc+=' - JACK support (git)'
-    license+=(GPL2)  # libjackserver
+    license+=(GPL2) # libjackserver
     depends=(pipewire-media-session-katt-git libpipewire-$_ver.so)
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
