@@ -4,17 +4,16 @@
 
 pkgbase=pipewire-katt-git
 pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-media-session-katt-git pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git pipewire-zeroconf-katt-git)
-pkgver=0.3.30.r27.g85d34d8d9
+pkgver=0.3.31.r92.g327ec4306
 pkgrel=1
 epoch=1
 pkgdesc='Low-latency audio/video router and processor (git)'
 url=https://pipewire.org
 license=(MIT)
 arch=(x86_64)
-makedepends=(git meson doxygen xmltoman valgrind libpulse alsa-lib
+makedepends=(git meson doxygen xmltoman valgrind libpulse alsa-lib libusb
             gst-plugins-base rtkit dbus sdl2 ncurses libsndfile bluez-libs sbc
-            libldac libopenaptx libfdk-aac vulkan-headers vulkan-icd-loader
-            avahi webrtc-audio-processing)
+            libldac libopenaptx libfdk-aac avahi webrtc-audio-processing)
 checkdepends=(desktop-file-utils)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
@@ -29,6 +28,7 @@ build() {
         -D jack=disabled
         -D libcamera=disabled
         -D udevrulesdir=/usr/lib/udev/rules.d
+        -D roc=disabled
     )
     
     arch-meson pipewire build "${meson_options[@]}"
@@ -54,7 +54,7 @@ _ver=${pkgver:0:3}
 
 package_pipewire-katt-git() {
     license+=(LGPL) # libspa-alsa
-    depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so libudev.so libasound.so libsystemd.so libbluetooth.so libsbc.so libldacBT_enc.so libopenaptx.so libfdk-aac.so libvulkan.so libwebrtc_audio_processing.so)
+    depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so libudev.so libusb-1.0.so libasound.so libsystemd.so libbluetooth.so libsbc.so libldacBT_enc.so libopenaptx.so libfdk-aac.so libwebrtc_audio_processing.so)
     optdepends=('pipewire-docs-katt-git: Documentation'
                 'pipewire-media-session-katt-git: Default session manager'
                 'pipewire-alsa-katt-git: ALSA configuration'
@@ -84,7 +84,10 @@ package_pipewire-katt-git() {
         _pick jack usr/share/man/man1/pw-jack.1
         _pick jack usr/share/pipewire/{jack.conf,media-session.d/with-jack}
 
+        _pick pulse usr/bin/pipewire-pulse
+        _pick pulse usr/lib/pipewire-$_ver/libpipewire-module-protocol-pulse.so
         _pick pulse usr/lib/pipewire-$_ver/libpipewire-module-pulse-tunnel.so
+        _pick pulse usr/lib/systemd/user/pipewire-pulse.*
         _pick pulse usr/share/pipewire/media-session.d/with-pulseaudio
 
         _pick gst usr/lib/gstreamer-1.0
@@ -156,7 +159,7 @@ package_pipewire-jack-katt-git() {
 
 package_pipewire-pulse-katt-git() {
     pkgdesc+=' - PulseAudio replacement (git)'
-    depends=(pipewire-media-session-katt-git libpulse)
+    depends=(pipewire-media-session-katt-git libpipewire-$_ver.so libpulse.so libavahi-{client,common}.so)
     provides=("${pkgname%-katt-git}" pulseaudio pulseaudio-bluetooth)
     conflicts=("${pkgname%-katt-git}" pulseaudio pulseaudio-bluetooth)
     install=pipewire-pulse.install
