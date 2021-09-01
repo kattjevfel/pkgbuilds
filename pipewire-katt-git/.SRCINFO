@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git)
-	pkgver = 0.3.32.r71.g8375d7b2d
+	pkgver = 0.3.34.r32.g28cf342bb
 	pkgrel = 1
 	epoch = 1
 	url = https://pipewire.org
