@@ -1,47 +1,34 @@
 # Maintainer: katt <magunasu.b97@gmail.com>
 
 pkgname=mpv-katt-git
-pkgver=0.33.0.r177.gfd8c673cfc
+pkgver=0.33.0.r397.g4a80de90d2
 pkgrel=1
 pkgdesc='a free, open source, and cross-platform media player (git, biased af)'
 arch=(x86_64)
 url=https://mpv.io
 license=(GPL3)
-depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libbluray libbluray.so libcaca libcdio libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo 'libplacebo.so>=120-64' libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxinerama libxkbcommon libxkbcommon.so libxrandr libxss libxv luajit mesa pipewire openal rubberband librubberband.so shaderc libshaderc_shared.so uchardet vulkan-icd-loader wayland xdg-utils zlib)
+depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libbluray libbluray.so libcdio libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo 'libplacebo.so>=120-64' libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxinerama libxkbcommon libxkbcommon.so libxrandr libxss libxv luajit rubberband librubberband.so shaderc libshaderc_shared.so uchardet vulkan-icd-loader wayland xdg-utils zlib)
 makedepends=(git python-docutils ladspa wayland-protocols ffnvcodec-headers vulkan-headers waf)
 provides=("${pkgname%-katt-git}")
 conflicts=("${pkgname%-katt-git}")
-source=(git+https://github.com/mpv-player/mpv.git
-		mpv-pipewire.patch::https://github.com/Oschowa/mpv/commit/fddb143282fa74425a8a6f29c9566e51777759d0.patch)
-sha256sums=('SKIP'
-            'd72a5863bceb5ac542c656ff85a9cb23d27d30c1609022e1b1735744f2777aaf')
+source=(git+https://github.com/mpv-player/mpv.git)
+sha256sums=('SKIP')
 
 pkgver() {
 	git -C "${pkgname%-katt-git}" describe --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
-prepare() {
-	cd "${pkgname%-katt-git}"
-
-	# Clean up from previous run
-	git clean -f
-
-	# patch mpv with the PipeWire audio backend
-	patch -Np1 -i ../mpv-pipewire.patch
-}
-
 build() {
 	cd "${pkgname%-katt-git}"
 
-	waf configure \
+	waf configure --prefix=/usr \
 		--confdir=/etc/mpv \
-		--disable-build-date \
 		--enable-libarchive \
 		--enable-libmpv-shared \
-		--enable-openal \
-		--lua=luajit \
-		--prefix=/usr
-	
+		--disable-build-date \
+		--disable-caca \
+		--lua=luajit
+
 	waf build
 }
 
