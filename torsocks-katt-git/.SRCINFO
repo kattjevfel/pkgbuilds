@@ -1,0 +1,16 @@
+pkgbase = torsocks-katt-git
+	pkgdesc = Wrapper to safely torify applications (git)
+	pkgver = 2.3.0.r6.g67cee6c
+	pkgrel = 1
+	url = https://gitweb.torproject.org/torsocks.git
+	arch = x86_64
+	license = GPL2
+	makedepends = git
+	depends = tor
+	provides = torsocks
+	conflicts = torsocks
+	backup = etc/tor/torsocks-katt-git.conf
+	source = git+https://git.torproject.org/torsocks.git
+	sha512sums = SKIP
+
+pkgname = torsocks-katt-git
