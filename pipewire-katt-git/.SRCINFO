@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git)
-	pkgver = 0.3.39.r13.gfcca0644d
+	pkgver = 0.3.41.r4.g57dae3e2b
 	pkgrel = 1
 	epoch = 1
 	url = https://pipewire.org
@@ -28,6 +28,7 @@ pkgbase = pipewire-katt-git
 	makedepends = libfreeaptx
 	makedepends = libfdk-aac
 	makedepends = avahi
+	makedepends = lilv
 	makedepends = webrtc-audio-processing
 	source = git+https://gitlab.freedesktop.org/pipewire/pipewire.git
 	md5sums = SKIP
@@ -51,14 +52,16 @@ pkgname = pipewire-katt-git
 	depends = libfreeaptx.so
 	depends = libfdk-aac.so
 	depends = libwebrtc_audio_processing.so
+	depends = liblilv-0.so
 	optdepends = pipewire-docs-katt-git: Documentation
 	optdepends = pipewire-session-manager: Session manager
 	optdepends = pipewire-alsa-katt-git: ALSA configuration
 	optdepends = pipewire-jack-katt-git: JACK support
 	optdepends = pipewire-pulse-katt-git: PulseAudio replacement
-	optdepends = gst-plugin-pipewire-katt-git: GStreamer support
+	optdepends = gst-plugin-pipewire-katt-git: GStreamer plugin
 	optdepends = pipewire-zeroconf-katt-git: Zeroconf support
-	provides = pipewire
+	optdepends = pipewire-v4l2-katt-git: V4L2 interceptor
+	provides = pipewire=0.3.41.r4.g57dae3e2b
 	provides = libpipewire-0.3.so
 	conflicts = pipewire
 
