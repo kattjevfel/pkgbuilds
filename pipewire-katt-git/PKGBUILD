@@ -3,15 +3,15 @@
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
 pkgbase=pipewire-katt-git
-pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git pipewire-zeroconf-katt-git pipewire-v4l2-katt-git)
-pkgver=0.3.41.r4.g57dae3e2b
+pkgname=(pipewire-katt-git alsa-card-profiles-katt-git pipewire-docs-katt-git pipewire-alsa-katt-git pipewire-jack-katt-git pipewire-pulse-katt-git gst-plugin-pipewire-katt-git pipewire-zeroconf-katt-git pipewire-v4l2-katt-git pipewire-x11-bell-katt-git)
+pkgver=0.3.44.r25.g115875dc5
 pkgrel=1
 epoch=1
 pkgdesc='Low-latency audio/video router and processor (git)'
 url=https://pipewire.org
 license=(MIT)
 arch=(x86_64)
-makedepends=(git meson doxygen graphviz python-docutils valgrind libpulse alsa-lib libusb gst-plugins-base rtkit dbus sdl2 ncurses libsndfile bluez-libs sbc libldac libfreeaptx libfdk-aac avahi lilv webrtc-audio-processing)
+makedepends=(git meson doxygen graphviz python-docutils valgrind libpulse alsa-lib libusb gst-plugins-base rtkit dbus sdl2 ncurses libcanberra libsndfile bluez-libs sbc libldac libfreeaptx libfdk-aac avahi lilv webrtc-audio-processing)
 checkdepends=(desktop-file-utils)
 source=(git+https://gitlab.freedesktop.org/pipewire/pipewire.git)
 md5sums=('SKIP')
@@ -20,10 +20,17 @@ pkgver() {
     git -C ${pkgbase%-katt-git} describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
+prepare() {
+    # remove export of LD_LIBRARY_PATH for pw-jack as it would add /usr/lib
+    sed -e '/LD_LIBRARY_PATH/d' -i ${pkgbase%-katt-git}/pipewire-jack/src/pw-jack.in
+}
+
 build() {
     local meson_options=(
         -D docs=enabled
         -D jack=disabled
+        -D jack-devel=true
+        -D libjack-path=/usr/lib
         -D libcamera=disabled
         -D udevrulesdir=/usr/lib/udev/rules.d
         -D roc=disabled
@@ -52,7 +59,7 @@ _ver=${pkgver:0:3}
 
 package_pipewire-katt-git() {
     license+=(LGPL) # libspa-alsa
-    depends=(rtkit alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so libudev.so libusb-1.0.so libasound.so libsystemd.so libbluetooth.so libsbc.so libldacBT_enc.so libfreeaptx.so libfdk-aac.so libwebrtc_audio_processing.so liblilv-0.so)
+    depends=(alsa-card-profiles-katt-git libdbus-1.so libncursesw.so libsndfile.so libudev.so libusb-1.0.so libasound.so libsystemd.so libbluetooth.so libsbc.so libldacBT_enc.so libfreeaptx.so libfdk-aac.so libwebrtc_audio_processing.so liblilv-0.so)
     optdepends=('pipewire-docs-katt-git: Documentation'
                 'pipewire-session-manager: Session manager'
                 'pipewire-alsa-katt-git: ALSA configuration'
@@ -60,7 +67,10 @@ package_pipewire-katt-git() {
                 'pipewire-pulse-katt-git: PulseAudio replacement'
                 'gst-plugin-pipewire-katt-git: GStreamer plugin'
                 'pipewire-zeroconf-katt-git: Zeroconf support'
-                'pipewire-v4l2-katt-git: V4L2 interceptor')
+                'pipewire-v4l2-katt-git: V4L2 interceptor'
+                'pipewire-x11-bell-katt-git: X11 bell'
+                'realtime-privileges: realtime privileges with rt module'
+                'rtkit: realtime privileges with rtkit module')
     provides=("${pkgname%-katt-git}=${pkgver}" libpipewire-$_ver.so)
     conflicts=("${pkgname%-katt-git}")
     install=pipewire.install
@@ -75,7 +85,10 @@ package_pipewire-katt-git() {
 
         _pick docs usr/share/doc
 
-        _pick jack usr/bin/pw-jack usr/lib/pipewire-$_ver/jack
+        _pick jack usr/bin/pw-jack
+        _pick jack usr/include/jack
+        _pick jack usr/lib/libjack*
+        _pick jack usr/lib/pkgconfig/jack.pc
         _pick jack usr/share/man/man1/pw-jack.1
         _pick jack usr/share/pipewire/jack.conf
 
@@ -89,6 +102,7 @@ package_pipewire-katt-git() {
         _pick zeroconf usr/lib/pipewire-$_ver/libpipewire-module-{raop,zeroconf}-discover.so
 
         _pick v4l2 usr/bin/pw-v4l2 usr/lib/pipewire-$_ver/v4l2
+        _pick x11-bell usr/lib/pipewire-$_ver/libpipewire-module-x11-bell.so
     )
 
     mkdir -p "$pkgdir/etc/alsa/conf.d"
@@ -136,9 +150,10 @@ package_pipewire-alsa-katt-git() {
 package_pipewire-jack-katt-git() {
     pkgdesc+=' - JACK support (git)'
     license+=(GPL2) # libjackserver
-    depends=(pipewire-session-manager libpipewire-$_ver.so)
-    provides=("${pkgname%-katt-git}")
-    conflicts=("${pkgname%-katt-git}")
+    depends=(sh pipewire-session-manager libpipewire-$_ver.so)
+    optdepends=('jack-example-tools: for official JACK example-clients and tools')
+    provides=("${pkgname%-katt-git}" jack libjack.so libjackserver.so libjacknet.so)
+    conflicts=("${pkgname%-katt-git}" jack jack2)
 
     mv jack/* "$pkgdir"
 
@@ -173,7 +188,7 @@ package_gst-plugin-pipewire-katt-git() {
 }
 
 package_pipewire-zeroconf-katt-git() {
-    pkgdesc+=" - Zeroconf support (git)"
+    pkgdesc+=' - Zeroconf support (git)'
     depends=(pipewire libpipewire-$_ver.so libavahi-{client,common}.so)
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
@@ -184,12 +199,23 @@ package_pipewire-zeroconf-katt-git() {
 }
 
 package_pipewire-v4l2-katt-git() {
-    pkgdesc+=" - V4L2 interceptor"
-    depends=(pipewire-session-manager libpipewire-$_ver.so)
+    pkgdesc+=' - V4L2 interceptor (git)'
+    depends=(sh pipewire-session-manager libpipewire-$_ver.so)
     provides=("${pkgname%-katt-git}")
     conflicts=("${pkgname%-katt-git}")
 
     mv v4l2/* "$pkgdir"
+
+    install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
+}
+
+package_pipewire-x11-bell-katt-git() {
+    pkgdesc+=' - X11 bell'
+    depends=(libcanberra.so libpipewire-$_ver.so libx11)
+    provides=("${pkgname%-katt-git}")
+    conflicts=("${pkgname%-katt-git}")
+
+    mv x11-bell/* "$pkgdir"
 
     install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 ${pkgbase%-katt-git}/COPYING
 }

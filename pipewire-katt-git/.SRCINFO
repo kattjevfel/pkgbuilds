@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git)
-	pkgver = 0.3.41.r4.g57dae3e2b
+	pkgver = 0.3.44.r25.g115875dc5
 	pkgrel = 1
 	epoch = 1
 	url = https://pipewire.org
@@ -21,6 +21,7 @@ pkgbase = pipewire-katt-git
 	makedepends = dbus
 	makedepends = sdl2
 	makedepends = ncurses
+	makedepends = libcanberra
 	makedepends = libsndfile
 	makedepends = bluez-libs
 	makedepends = sbc
@@ -37,7 +38,6 @@ pkgname = pipewire-katt-git
 	install = pipewire.install
 	license = MIT
 	license = LGPL
-	depends = rtkit
 	depends = alsa-card-profiles-katt-git
 	depends = libdbus-1.so
 	depends = libncursesw.so
@@ -61,7 +61,10 @@ pkgname = pipewire-katt-git
 	optdepends = gst-plugin-pipewire-katt-git: GStreamer plugin
 	optdepends = pipewire-zeroconf-katt-git: Zeroconf support
 	optdepends = pipewire-v4l2-katt-git: V4L2 interceptor
-	provides = pipewire=0.3.41.r4.g57dae3e2b
+	optdepends = pipewire-x11-bell-katt-git: X11 bell
+	optdepends = realtime-privileges: realtime privileges with rt module
+	optdepends = rtkit: realtime privileges with rtkit module
+	provides = pipewire=0.3.44.r25.g115875dc5
 	provides = libpipewire-0.3.so
 	conflicts = pipewire
 
@@ -87,10 +90,18 @@ pkgname = pipewire-jack-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git) - JACK support (git)
 	license = MIT
 	license = GPL2
+	depends = sh
 	depends = pipewire-session-manager
 	depends = libpipewire-0.3.so
+	optdepends = jack-example-tools: for official JACK example-clients and tools
 	provides = pipewire-jack
+	provides = jack
+	provides = libjack.so
+	provides = libjackserver.so
+	provides = libjacknet.so
 	conflicts = pipewire-jack
+	conflicts = jack
+	conflicts = jack2
 
 pkgname = pipewire-pulse-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git) - PulseAudio replacement (git)
@@ -125,8 +136,17 @@ pkgname = pipewire-zeroconf-katt-git
 	conflicts = pipewire-zeroconf
 
 pkgname = pipewire-v4l2-katt-git
-	pkgdesc = Low-latency audio/video router and processor (git) - V4L2 interceptor
+	pkgdesc = Low-latency audio/video router and processor (git) - V4L2 interceptor (git)
+	depends = sh
 	depends = pipewire-session-manager
 	depends = libpipewire-0.3.so
 	provides = pipewire-v4l2
 	conflicts = pipewire-v4l2
+
+pkgname = pipewire-x11-bell-katt-git
+	pkgdesc = Low-latency audio/video router and processor (git) - X11 bell
+	depends = libcanberra.so
+	depends = libpipewire-0.3.so
+	depends = libx11
+	provides = pipewire-x11-bell
+	conflicts = pipewire-x11-bell
