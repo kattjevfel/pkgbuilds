@@ -1,13 +1,13 @@
 # Maintainer: katt <magunasu.b97@gmail.com>
 
 pkgname=mpv-katt-git
-pkgver=0.33.0.r397.g4a80de90d2
+pkgver=0.34.0.r198.gbc9805c71a
 pkgrel=1
 pkgdesc='a free, open source, and cross-platform media player (git, biased af)'
 arch=(x86_64)
 url=https://mpv.io
 license=(GPL3)
-depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libbluray libbluray.so libcdio libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo 'libplacebo.so>=120-64' libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxinerama libxkbcommon libxkbcommon.so libxrandr libxss libxv luajit rubberband librubberband.so shaderc libshaderc_shared.so uchardet vulkan-icd-loader wayland xdg-utils zlib)
+depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo libplacebo.so libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxinerama libxkbcommon libxkbcommon.so libxrandr libxss libxv luajit mesa pipewire libpipewire-0.3.so rubberband librubberband.so shaderc libshaderc_shared.so uchardet vulkan-icd-loader wayland xdg-utils zlib)
 makedepends=(git python-docutils ladspa wayland-protocols ffnvcodec-headers vulkan-headers waf)
 provides=("${pkgname%-katt-git}")
 conflicts=("${pkgname%-katt-git}")
