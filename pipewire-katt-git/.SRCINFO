@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git)
-	pkgver = 0.3.44.r25.g115875dc5
+	pkgver = 0.3.47.r15.gbb1cd23a1
 	pkgrel = 1
 	epoch = 1
 	url = https://pipewire.org
@@ -64,7 +64,7 @@ pkgname = pipewire-katt-git
 	optdepends = pipewire-x11-bell-katt-git: X11 bell
 	optdepends = realtime-privileges: realtime privileges with rt module
 	optdepends = rtkit: realtime privileges with rtkit module
-	provides = pipewire=0.3.44.r25.g115875dc5
+	provides = pipewire=0.3.47.r15.gbb1cd23a1
 	provides = libpipewire-0.3.so
 	conflicts = pipewire
 
@@ -90,9 +90,9 @@ pkgname = pipewire-jack-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git) - JACK support (git)
 	license = MIT
 	license = GPL2
-	depends = sh
 	depends = pipewire-session-manager
 	depends = libpipewire-0.3.so
+	depends = sh
 	optdepends = jack-example-tools: for official JACK example-clients and tools
 	provides = pipewire-jack
 	provides = jack
@@ -137,16 +137,17 @@ pkgname = pipewire-zeroconf-katt-git
 
 pkgname = pipewire-v4l2-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git) - V4L2 interceptor (git)
-	depends = sh
 	depends = pipewire-session-manager
 	depends = libpipewire-0.3.so
+	depends = sh
 	provides = pipewire-v4l2
 	conflicts = pipewire-v4l2
 
 pkgname = pipewire-x11-bell-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git) - X11 bell
-	depends = libcanberra.so
+	depends = pipewire
 	depends = libpipewire-0.3.so
 	depends = libx11
+	depends = libcanberra.so
 	provides = pipewire-x11-bell
 	conflicts = pipewire-x11-bell
