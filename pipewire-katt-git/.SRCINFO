@@ -1,6 +1,6 @@
 pkgbase = pipewire-katt-git
 	pkgdesc = Low-latency audio/video router and processor (git)
-	pkgver = 0.3.47.r15.gbb1cd23a1
+	pkgver = 0.3.48.r86.g4dff7f0e5
 	pkgrel = 1
 	epoch = 1
 	url = https://pipewire.org
@@ -31,6 +31,8 @@ pkgbase = pipewire-katt-git
 	makedepends = avahi
 	makedepends = lilv
 	makedepends = webrtc-audio-processing
+	makedepends = libx11
+	makedepends = libxfixes
 	source = git+https://gitlab.freedesktop.org/pipewire/pipewire.git
 	md5sums = SKIP
 
@@ -64,7 +66,7 @@ pkgname = pipewire-katt-git
 	optdepends = pipewire-x11-bell-katt-git: X11 bell
 	optdepends = realtime-privileges: realtime privileges with rt module
 	optdepends = rtkit: realtime privileges with rtkit module
-	provides = pipewire=0.3.47.r15.gbb1cd23a1
+	provides = pipewire=0.3.48.r86.g4dff7f0e5
 	provides = libpipewire-0.3.so
 	conflicts = pipewire
 
@@ -148,6 +150,7 @@ pkgname = pipewire-x11-bell-katt-git
 	depends = pipewire
 	depends = libpipewire-0.3.so
 	depends = libx11
+	depends = libxfixes
 	depends = libcanberra.so
 	provides = pipewire-x11-bell
 	conflicts = pipewire-x11-bell
