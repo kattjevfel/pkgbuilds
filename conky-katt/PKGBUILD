@@ -5,23 +5,36 @@
 # Contributor: Partha Chowdhury <kira.laucas@gmail.com>
 
 pkgname=conky-katt
-pkgver=1.12.1
-pkgrel=1
+pkgver=1.12.2
+_gitcommit=52e5aa53b4c76973519a770949dc8bdca0145325
+pkgrel=2
 pkgdesc='Lightweight system monitor for X (without nvidia, docs and wlan)'
 arch=(x86_64)
 url=https://github.com/brndnmtthws/conky
 license=(BSD GPL)
 depends=(glibc glib2 lua libxdamage libxinerama libxft imlib2 libxml2 libpulse systemd-libs ncurses curl libncursesw.so libsystemd.so libpulse.so libcurl.so)
-makedepends=(cmake man-db git)
+makedepends=(cmake man-db git catch2)
 provides=("${pkgname%-katt}")
 conflicts=("${pkgname%-katt}")
-source=(git+${url}.git#tag=v"${pkgver}"?signed)
+source=("git+${url}.git#tag=${_gitcommit}?signed")
 sha256sums=('SKIP')
 validpgpkeys=('EB2E847572A71BE20F59AFBEB49ABB7270D9D4FD') # Brenden Matthews
 
+pkgver() {
+	git -C "${pkgname%-katt}" describe --tags --match 'v*' | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+	cd "${pkgname%-katt}"
+	# Unbundle catch2 to fix build with glibc 2.35
+	rm -r tests/catch2
+	ln -s /usr/include/catch2 tests
+}
+
 build() {
 	cmake -B build -S "${pkgname%-katt}" \
-		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_BUILD_TYPE=Release \
+		-D CMAKE_CXX_FLAGS="$CXXFLAGS -ffat-lto-objects" \
 		-DMAINTAINER_MODE=ON \
 		-DBUILD_XDBE=ON \
 		-DBUILD_XSHAPE=ON \
