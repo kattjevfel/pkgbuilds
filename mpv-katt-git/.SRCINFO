@@ -1,6 +1,6 @@
 pkgbase = mpv-katt-git
 	pkgdesc = a free, open source, and cross-platform media player (git, biased af)
-	pkgver = 0.34.0.r198.gbc9805c71a
+	pkgver = 0.34.0.r301.gdefb02daa4
 	pkgrel = 1
 	url = https://mpv.io
 	arch = x86_64
@@ -11,7 +11,7 @@ pkgbase = mpv-katt-git
 	makedepends = wayland-protocols
 	makedepends = ffnvcodec-headers
 	makedepends = vulkan-headers
-	makedepends = waf
+	makedepends = meson
 	depends = desktop-file-utils
 	depends = ffmpeg
 	depends = libavcodec.so

@@ -1,45 +1,44 @@
 # Maintainer: katt <magunasu.b97@gmail.com>
 
 pkgname=mpv-katt-git
-pkgver=0.34.0.r198.gbc9805c71a
+pkgver=0.34.0.r301.gdefb02daa4
 pkgrel=1
 pkgdesc='a free, open source, and cross-platform media player (git, biased af)'
 arch=(x86_64)
 url=https://mpv.io
 license=(GPL3)
 depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo libplacebo.so libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxinerama libxkbcommon libxkbcommon.so libxrandr libxss libxv luajit mesa pipewire libpipewire-0.3.so rubberband librubberband.so shaderc libshaderc_shared.so uchardet vulkan-icd-loader wayland xdg-utils zlib)
-makedepends=(git python-docutils ladspa wayland-protocols ffnvcodec-headers vulkan-headers waf)
+makedepends=(git python-docutils ladspa wayland-protocols ffnvcodec-headers vulkan-headers meson)
 provides=("${pkgname%-katt-git}")
 conflicts=("${pkgname%-katt-git}")
 source=(git+https://github.com/mpv-player/mpv.git)
 sha256sums=('SKIP')
 
 pkgver() {
-	git -C "${pkgname%-katt-git}" describe --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+    git -C "${pkgname%-katt-git}" describe --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-	cd "${pkgname%-katt-git}"
+    meson "${pkgname%-katt-git}" build \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --buildtype=plain \
+        --wrap-mode=nodownload \
+        -Dlibmpv=true \
+        -Dbuild-date=false \
+        -Dlibarchive=enabled \
+        -Dcaca=disabled \
+        -Dlua=luajit
 
-	waf configure --prefix=/usr \
-		--confdir=/etc/mpv \
-		--enable-libarchive \
-		--enable-libmpv-shared \
-		--disable-build-date \
-		--disable-caca \
-		--lua=luajit
-
-	waf build
+    meson compile -C build
 }
 
 package() {
-  cd "${pkgname%-katt-git}"
+    meson install -C build --destdir "$pkgdir"
 
-  waf install --destdir="$pkgdir"
+    install -m0644 "${pkgname%-katt-git}"/DOCS/{encoding.rst,tech-overview.txt} \
+        "$pkgdir"/usr/share/doc/mpv
 
-  install -m0644 DOCS/{encoding.rst,tech-overview.txt} \
-    "$pkgdir"/usr/share/doc/mpv
-
-  install -m0644 TOOLS/lua/* \
-    -D -t "$pkgdir"/usr/share/mpv/scripts
+    install -m0644 "${pkgname%-katt-git}"/TOOLS/lua/* \
+        -D -t "$pkgdir"/usr/share/mpv/scripts
 }
