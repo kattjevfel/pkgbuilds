@@ -5,7 +5,7 @@
 # Contributor: Partha Chowdhury <kira.laucas@gmail.com>
 
 pkgname=conky-katt
-pkgver=1.13.1
+pkgver=1.14.0
 pkgrel=1
 pkgdesc='Lightweight system monitor for X (without nvidia, docs and wlan)'
 arch=(x86_64)
@@ -15,7 +15,7 @@ depends=(glibc glib2 lua libxdamage libxinerama libxft imlib2 libxml2 libpulse s
 makedepends=(cmake man-db git catch2)
 provides=("${pkgname%-katt}")
 conflicts=("${pkgname%-katt}")
-source=("git+${url}.git#tag=0f216e8f0247fc0a08cf496b23581867ff51580d?signed")
+source=("git+${url}.git#tag=0fe9a15572c094c232554a73356ef089039f4bb2?signed")
 sha256sums=('SKIP')
 validpgpkeys=('EB2E847572A71BE20F59AFBEB49ABB7270D9D4FD') # Brenden Matthews
 
