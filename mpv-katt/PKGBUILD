@@ -1,0 +1,42 @@
+# Maintainer: katt <magunasu.b97@gmail.com>
+
+pkgname=mpv-katt
+pkgver=0.35.0
+pkgrel=1
+pkgdesc='a free, open source, and cross-platform media player (git, biased af)'
+arch=(x86_64)
+url=https://mpv.io
+license=(GPL3)
+depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo libplacebo.so libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxinerama libxkbcommon libxkbcommon.so libxrandr libxss libxv luajit mesa pipewire libpipewire-0.3.so rubberband librubberband.so shaderc libshaderc_shared.so uchardet vulkan-icd-loader wayland xdg-utils zlib)
+makedepends=(git python-docutils ladspa wayland-protocols ffnvcodec-headers vulkan-headers meson)
+provides=("${pkgname%-katt}")
+conflicts=("${pkgname%-katt}")
+_tag=33f10b1aee5fef45960728fe8595d1603c8a9a85 # git rev-parse v${pkgver}
+source=("git+https://github.com/mpv-player/mpv.git#tag=${_tag}?signed")
+sha256sums=('SKIP')
+validpgpkeys=('145077D82501AA20152CACCE8D769208D5E31419') # sfan5 <sfan5@live.de>
+
+pkgver() {
+    git -C "${pkgname%-katt}" describe --tags | sed 's/^v//'
+}
+
+build() {
+    meson "${pkgname%-katt}" build \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --buildtype=plain \
+        --wrap-mode=nodownload \
+        -Dlibmpv=true \
+        -Dbuild-date=false \
+        -Dlibarchive=enabled \
+        -Dcaca=disabled \
+        -Dlua=luajit
+
+    meson compile -C build
+}
+
+package() {
+    meson install -C build --destdir "$pkgdir"
+    install -m0644 "${pkgname%-katt}"/DOCS/{encoding.rst,tech-overview.txt} "$pkgdir"/usr/share/doc/mpv
+    install -m0644 "${pkgname%-katt}"/TOOLS/lua/* -D -t "$pkgdir"/usr/share/mpv/scripts
+}
