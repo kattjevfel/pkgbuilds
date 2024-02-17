@@ -1,16 +1,19 @@
 # Maintainer: katt <magunasu.b97@gmail.com>
 
 pkgname=mpv-katt-git
-pkgver=0.34.0.r301.gdefb02daa4
+pkgver=0.37.0.r334.gfb33bb7fc4
 pkgrel=1
 pkgdesc='a free, open source, and cross-platform media player (git, biased af)'
 arch=(x86_64)
 url=https://mpv.io
-license=(GPL3)
-depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo libplacebo.so libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxinerama libxkbcommon libxkbcommon.so libxrandr libxss libxv luajit mesa pipewire libpipewire-0.3.so rubberband librubberband.so shaderc libshaderc_shared.so uchardet vulkan-icd-loader wayland xdg-utils zlib)
-makedepends=(git python-docutils ladspa wayland-protocols ffnvcodec-headers vulkan-headers meson)
-provides=("${pkgname%-katt-git}")
+license=(GPL-2.0-or-later AND LGPL-2.1-or-later)
+depends=(desktop-file-utils ffmpeg libavcodec.so libavdevice.so libavfilter.so libavformat.so libavutil.so libswresample.so libswscale.so glibc hicolor-icon-theme lcms2 liblcms2.so libarchive libarchive.so libass libass.so libdrm libegl libgl libglvnd libjpeg libjpeg.so libplacebo libplacebo.so libva libva.so libva-drm.so libva-wayland.so libva-x11.so libvdpau libx11 libxext libxkbcommon libxkbcommon.so libxpresent libxrandr libxss libxv luajit mesa libpipewire rubberband librubberband.so shaderc libshaderc_shared.so uchardet vapoursynth vulkan-icd-loader wayland zlib)
+makedepends=(git meson python-docutils ladspa wayland-protocols ffnvcodec-headers vulkan-headers)
+optdepends=('yt-dlp: for video-sharing websites playback'
+            'youtube-dl: for video-sharing websites playback')
+provides=("${pkgname%-katt-git}" libmpv.so)
 conflicts=("${pkgname%-katt-git}")
+options=('!emptydirs')
 source=(git+https://github.com/mpv-player/mpv.git)
 sha256sums=('SKIP')
 
@@ -19,26 +22,32 @@ pkgver() {
 }
 
 build() {
-    meson "${pkgname%-katt-git}" build \
-        --prefix=/usr \
-        --sysconfdir=/etc \
-        --buildtype=plain \
-        --wrap-mode=nodownload \
-        -Dlibmpv=true \
-        -Dbuild-date=false \
-        -Dlibarchive=enabled \
-        -Dcaca=disabled \
-        -Dlua=luajit
+    local _meson_options=(
+        --auto-features auto
 
+        -Dlibmpv=true
+
+        -Dcaca=disabled
+        -Dlibarchive=enabled
+    )
+    arch-meson "${pkgname%-katt-git}" build "${_meson_options[@]}"
     meson compile -C build
 }
 
+check() {
+    meson test -C build
+}
+
+
 package() {
-    meson install -C build --destdir "$pkgdir"
+    meson install -C build --destdir "${pkgdir}"
+
+    # delete private entries only required for static linking
+    sed -i -e '/Requires.private/d' -e '/Libs.private/d' "${pkgdir}"/usr/lib/pkgconfig/mpv.pc
 
     install -m0644 "${pkgname%-katt-git}"/DOCS/{encoding.rst,tech-overview.txt} \
-        "$pkgdir"/usr/share/doc/mpv
+        "${pkgdir}"/usr/share/doc/mpv
 
-    install -m0644 "${pkgname%-katt-git}"/TOOLS/lua/* \
-        -D -t "$pkgdir"/usr/share/mpv/scripts
+    install -m0644 "${pkgname%-katt-git}"/TOOLS/{umpv,mpv_identify.sh,stats-conv.py,idet.sh,lua/*} \
+        -D -t "${pkgdir}"/usr/share/mpv/scripts
 }
