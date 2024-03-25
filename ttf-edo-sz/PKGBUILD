@@ -1,0 +1,15 @@
+# Maintainer: katt <magunasu.b97@gmail.com>
+
+pkgname=ttf-edo-sz
+pkgver=20090923
+pkgrel=1
+pkgdesc='The font used in Yakuza'
+arch=(any)
+url=https://www.dafont.com/edo-sz.font
+license=(unknown)
+source=(edo_sz.zip::"https://dl.dafont.com/dl/?f=edo_sz")
+sha256sums=('939711b8211eb798aa4446dc070dd3590478c73982d39d399b0b7a8c84840cde')
+
+package() {
+	install -Dm644 -t "$pkgdir/usr/share/fonts/TTF" edosz.ttf
+}
